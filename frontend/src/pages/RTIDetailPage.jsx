@@ -1,3 +1,4 @@
+import { API_BASE } from "../api";
 import { useState, useEffect } from "react";
 import { useParams, Link } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
@@ -16,7 +17,7 @@ export default function RTIDetailPage() {
   const fetchDetail = async () => {
     setLoading(true);
     try {
-      const res = await fetch(`/api/rti/${id}`);
+      const res = await fetch(`${API_BASE}/api/rti/${id}`);
       const json = await res.json();
       if (!res.ok) setError(json.error || "RTI nahi mili.");
       else setRti(json.data);
@@ -36,7 +37,7 @@ export default function RTIDetailPage() {
     setSubmitting(true);
     setFormError("");
     try {
-      const res = await fetch(`/api/rti/${id}/response`, {
+      const res = await fetch(`${API_BASE}/api/rti/${id}/response`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

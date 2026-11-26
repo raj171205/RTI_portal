@@ -1,3 +1,4 @@
+import { API_BASE } from "../api";
 import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
@@ -20,7 +21,7 @@ export default function AuthPage() {
     setError("");
     setLoading(true);
 
-    const endpoint = isLogin ? "/api/auth/login" : "/api/auth/register";
+    const endpoint = isLogin ? `${API_BASE}/api/auth/login` : `${API_BASE}/api/auth/register`;
     const payload = isLogin
       ? { email, password }
       : { name, email, password, role, department: role === "OFFICER" ? department : null };

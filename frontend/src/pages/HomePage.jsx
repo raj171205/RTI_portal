@@ -1,3 +1,4 @@
+import { API_BASE } from "../api";
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
@@ -43,7 +44,7 @@ export default function HomePage() {
       }
 
       const queryString = queryParams.toString();
-      const url = queryString ? `/api/rti?${queryString}` : "/api/rti";
+      const url = queryString ? `${API_BASE}/api/rti?${queryString}` : `${API_BASE}/api/rti`;
 
       const res = await fetch(url, {
         headers: token ? { Authorization: `Bearer ${token}` } : {},
@@ -72,7 +73,7 @@ export default function HomePage() {
     setHasSearched(true);
 
     try {
-      const res = await fetch(`/api/rti/search?q=${encodeURIComponent(searchQuery.trim())}`);
+      const res = await fetch(`${API_BASE}/api/rti/search?q=${encodeURIComponent(searchQuery.trim())}`);
       const data = await res.json();
       if (!res.ok) {
         setSearchError(data.error || "Search failed.");
@@ -105,7 +106,7 @@ export default function HomePage() {
     setSubmitStatus({ type: "", message: "" });
 
     try {
-      const res = await fetch("/api/rti/draft", {
+      const res = await fetch(`${API_BASE}/api/rti/draft`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -136,7 +137,7 @@ export default function HomePage() {
     if (forceSubmit) setDuplicateWarning(null);
 
     try {
-      const res = await fetch("/api/rti/submit", {
+      const res = await fetch(`${API_BASE}/api/rti/submit`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

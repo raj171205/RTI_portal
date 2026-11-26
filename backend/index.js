@@ -10,9 +10,9 @@ import { verifyToken, requireOfficer } from "./middleware/auth.js";
 dotenv.config();
 
 const app = express();
-const PORT = 5001;
+const PORT = process.env.PORT || 5001;
 
-app.use(cors());
+app.use(cors({ origin: process.env.FRONTEND_URL || "*" }));
 app.use(express.json());
 
 // --- AUTH ROUTES ---
