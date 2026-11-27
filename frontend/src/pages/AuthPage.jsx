@@ -55,6 +55,77 @@ function Spinner() {
   );
 }
 
+// Put the Ashoka Stambh image in your project's public/ folder as
+// "ashoka-stambh.png" (or change the path below). Until that file exists,
+// an Ashoka Chakra drawn in SVG is shown instead.
+const EMBLEM_SRC = "/ashoka-stambh.png";
+
+function Emblem({ className = "" }) {
+  const [failed, setFailed] = useState(false);
+
+  if (!failed) {
+    return (
+      <img
+        src={EMBLEM_SRC}
+        alt="Ashoka Stambh, emblem of India"
+        onError={() => setFailed(true)}
+        className={`${className} object-contain brightness-0 invert opacity-95`}
+      />
+    );
+  }
+
+  return (
+    <svg viewBox="0 0 100 100" className={className} role="img" aria-label="Ashoka Chakra" fill="none" stroke="white">
+      <circle cx="50" cy="50" r="46" strokeWidth="3" />
+      <circle cx="50" cy="50" r="7" strokeWidth="3" fill="white" />
+      {Array.from({ length: 24 }, (_, i) => (
+        <line
+          key={i}
+          x1="50"
+          y1="12"
+          x2="50"
+          y2="43"
+          strokeWidth="2"
+          strokeLinecap="round"
+          transform={`rotate(${i * 15} 50 50)`}
+        />
+      ))}
+    </svg>
+  );
+}
+
+// Flag of India: 3:2 ratio, three equal bands, navy 24-spoke Ashoka Chakra
+// in the centre of the white band.
+function IndianFlag({ className = "" }) {
+  return (
+    <svg
+      viewBox="0 0 90 60"
+      className={`${className} rounded-md shadow-lg shadow-black/30`}
+      role="img"
+      aria-label="Flag of India"
+    >
+      <rect width="90" height="20" y="0" fill="#FF9933" />
+      <rect width="90" height="20" y="20" fill="#FFFFFF" />
+      <rect width="90" height="20" y="40" fill="#138808" />
+      <g fill="none" stroke="#000080" transform="translate(45 30)">
+        <circle r="8" strokeWidth="0.8" />
+        <circle r="1.1" fill="#000080" strokeWidth="0" />
+        {Array.from({ length: 24 }, (_, i) => (
+          <line
+            key={i}
+            x1="0"
+            y1="-1.6"
+            x2="0"
+            y2="-7.6"
+            strokeWidth="0.4"
+            transform={`rotate(${i * 15})`}
+          />
+        ))}
+      </g>
+    </svg>
+  );
+}
+
 export default function AuthPage() {
   const [isLogin, setIsLogin] = useState(true);
   const [name, setName] = useState("");
@@ -141,6 +212,12 @@ export default function AuthPage() {
         </div>
 
         <div className="relative px-8 sm:px-12 py-10 lg:py-0 max-w-lg">
+          <div className="flex items-center gap-5 mb-7">
+            <Emblem className="w-20 h-20 sm:w-24 sm:h-24" />
+            <span className="w-px h-14 bg-white/20" aria-hidden="true" />
+            <IndianFlag className="w-24 sm:w-28 h-auto" />
+          </div>
+          <p className="text-xs font-semibold text-blue-200/70 -mt-3 mb-5">Satyameva Jayate</p>
           <h1 className="au-display text-3xl sm:text-4xl font-extrabold leading-[1.12]">
             Sarkar se jawab maangna ab aasan hai
           </h1>

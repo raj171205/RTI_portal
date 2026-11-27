@@ -2,6 +2,7 @@ import { useState, useEffect, useMemo } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import { API_BASE } from "../api";
+import { getSLAInfo } from "../utils/rtiHelpers";
 
 const DEPARTMENTS = [
   "Public Works Department (PWD)",
@@ -254,7 +255,7 @@ export default function CitizenDashboard() {
   const field = `w-full rounded-xl border border-slate-300 bg-white px-3.5 py-2.5 text-sm placeholder:text-slate-400 focus:outline-none focus:border-blue-600 focus:ring-2 focus:ring-blue-600/20 transition`;
 
   return (
-    <div className="js-root min-h-screen bg-[#F4F6FA] text-slate-900">
+    <div id="top" className="js-root min-h-screen bg-[#F4F6FA] text-slate-900">
       <style>{fontCss}</style>
 
       {/* Tricolour strip */}
@@ -659,6 +660,7 @@ export default function CitizenDashboard() {
                   const done = rti.status === "RESPONDED";
                   const mine = user && rti.citizen_id === user.id;
                   const when = timeAgo(rti.created_at);
+                  const sla = getSLAInfo(rti.created_at, rti.status);
                   return (
                     <li key={rti.id}>
                       <Link
@@ -671,14 +673,27 @@ export default function CitizenDashboard() {
                           <span className="font-mono text-[11px] font-semibold text-slate-500 truncate">
                             {rti.application_no}
                           </span>
-                          <span
-                            className={`shrink-0 inline-flex items-center gap-1.5 text-[11px] font-semibold px-2 py-0.5 rounded-full ${
-                              done ? "bg-emerald-100 text-emerald-800" : "bg-amber-100 text-amber-800"
-                            }`}
-                          >
-                            <span className={`w-1.5 h-1.5 rounded-full ${done ? "bg-emerald-600" : "bg-amber-500"}`} />
-                            {done ? "Responded" : "Pending"}
-                          </span>
+                          <div className="flex items-center gap-1.5 shrink-0">
+                            {!done && (
+                              <span
+                                className={`text-[10px] font-semibold px-2 py-0.5 rounded-full ${
+                                  sla.isOverdue
+                                    ? "bg-red-100 text-red-700"
+                                    : "bg-blue-50 text-blue-700"
+                                }`}
+                              >
+                                {sla.label}
+                              </span>
+                            )}
+                            <span
+                              className={`inline-flex items-center gap-1.5 text-[11px] font-semibold px-2 py-0.5 rounded-full ${
+                                done ? "bg-emerald-100 text-emerald-800" : "bg-amber-100 text-amber-800"
+                              }`}
+                            >
+                              <span className={`w-1.5 h-1.5 rounded-full ${done ? "bg-emerald-600" : "bg-amber-500"}`} />
+                              {done ? "Responded" : "Pending"}
+                            </span>
+                          </div>
                         </div>
                         <h3 className="text-sm font-bold text-slate-900 line-clamp-1 group-hover:text-blue-800">
                           <Highlight text={rti.subject} query={activeQuery} />
@@ -701,10 +716,76 @@ export default function CitizenDashboard() {
         </section>
       </main>
 
-      <footer className="border-t border-slate-200 bg-white">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 py-5 text-xs text-slate-500 flex flex-col sm:flex-row justify-between gap-1">
-          <span>JanSoochna AI helps you draft RTI applications. It does not replace legal advice.</span>
-          <span>Right to Information Act, 2005</span>
+      <footer className="bg-[#0A1A40] text-slate-300">
+        <div className="h-1 flex" aria-hidden="true">
+          <div className="flex-1 bg-[#E8890C]" />
+          <div className="flex-1 bg-white" />
+          <div className="flex-1 bg-[#1B7F3B]" />
+        </div>
+
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 py-10 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+          <div className="lg:col-span-1">
+            <div className="flex items-center gap-3">
+              <span className="js-display w-9 h-9 rounded-xl bg-[#E8890C] text-[#0A1A40] font-extrabold flex items-center justify-center">
+                J
+              </span>
+              <span className="js-display font-extrabold text-white text-lg">JanSoochna AI</span>
+            </div>
+            <p className="text-sm text-blue-100/75 mt-3 leading-relaxed">
+              Citizens ko RTI likhne, file karne aur track karne me madad karne wala portal. AI sirf draft banata hai,
+              final application aapki hoti hai.
+            </p>
+            <p className="text-xs font-semibold text-blue-200/60 mt-4">Satyameva Jayate</p>
+          </div>
+
+          <div>
+            <h3 className="text-sm font-bold text-white mb-3">Apne haq jaanein</h3>
+            <ul className="space-y-2 text-sm text-blue-100/75">
+              <li>Jawab ke liye 30 din (Section 7)</li>
+              <li>Jeevan ya swatantrata ka mamla: 48 ghante</li>
+              <li>Pehli appeal: 30 din ke andar (Section 19)</li>
+              <li>Doosri appeal: Information Commission, 90 din</li>
+            </ul>
+          </div>
+
+          <div>
+            <h3 className="text-sm font-bold text-white mb-3">Quick links</h3>
+            <ul className="space-y-2 text-sm">
+              <li>
+                <a href="#top" onClick={(e) => { e.preventDefault(); window.scrollTo({ top: 0, behavior: "smooth" }); }} className="text-blue-100/75 hover:text-white hover:underline">
+                  Naya RTI file karein
+                </a>
+              </li>
+              <li>
+                <a href="#top" onClick={(e) => { e.preventDefault(); window.scrollTo({ top: 0, behavior: "smooth" }); }} className="text-blue-100/75 hover:text-white hover:underline">
+                  Existing RTI search karein
+                </a>
+              </li>
+              <li>
+                <Link to="/auth" className="text-blue-100/75 hover:text-white hover:underline">
+                  {user ? "Account badlein" : "Login / Register"}
+                </Link>
+              </li>
+            </ul>
+          </div>
+
+          <div>
+            <h3 className="text-sm font-bold text-white mb-3">Zaroori suchna</h3>
+            <ul className="space-y-2 text-sm text-blue-100/75">
+              <li>Aam taur par application fee 10 rupaye hoti hai, rajya ke hisaab se alag ho sakti hai.</li>
+              <li>BPL parivaar fee se mukt ho sakte hain.</li>
+              <li>Application number sambhal kar rakhein.</li>
+            </ul>
+          </div>
+        </div>
+
+        <div className="border-t border-white/10">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 py-4 text-xs text-blue-100/60 flex flex-col sm:flex-row justify-between gap-1.5">
+            <span>
+              © {new Date().getFullYear()} JanSoochna AI. Yeh jankari general hai aur legal salah nahi hai.
+            </span>
+            <span>Right to Information Act, 2005</span>
+          </div>
         </div>
       </footer>
     </div>

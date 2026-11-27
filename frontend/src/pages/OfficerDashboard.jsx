@@ -531,6 +531,50 @@ export default function OfficerDashboard() {
             )}
           </div>
         </main>
+
+        <footer className="border-t border-slate-200 bg-white">
+          <div className="px-4 sm:px-8 py-8 grid grid-cols-1 md:grid-cols-3 gap-8">
+            <div>
+              <h3 className="od-display text-base font-extrabold text-[#0F2557]">Samay seema yaad rakhein</h3>
+              <ul className="mt-3 space-y-2 text-sm text-slate-600">
+                <li>
+                  <strong className="text-slate-800">30 din:</strong> jawab dene ki seema (Section 7)
+                </li>
+                <li>
+                  <strong className="text-slate-800">48 ghante:</strong> jeevan ya swatantrata se jude mamle
+                </li>
+                <li>
+                  <strong className="text-slate-800">5 din:</strong> galat department ki RTI transfer karne ke liye
+                  (Section 6)
+                </li>
+              </ul>
+            </div>
+
+            <div>
+              <h3 className="od-display text-base font-extrabold text-[#0F2557]">Jawab likhte samay</h3>
+              <ul className="mt-3 space-y-2 text-sm text-slate-600">
+                <li>Har sawal ka point-wise jawab dein.</li>
+                <li>Jankari na dene par Section 8 ya 9 ka kaaran likhein.</li>
+                <li>Citizen ko appeal ka adhikar bataein (Section 19).</li>
+                <li>Applicant ki jankari sirf is RTI ke nipatan ke liye istemal karein.</li>
+              </ul>
+            </div>
+
+            <div>
+              <h3 className="od-display text-base font-extrabold text-[#0F2557]">Dhyan dein</h3>
+              <p className="mt-3 text-sm text-slate-600 leading-relaxed">
+                Bina kaaran jawab me deri par Information Commission 250 rupaye prati din (adhiktam 25,000 rupaye) tak
+                ka jurmana laga sakta hai (Section 20).
+              </p>
+              <p className="mt-3 text-xs text-slate-400">Satyameva Jayate</p>
+            </div>
+          </div>
+
+          <div className="border-t border-slate-100 px-4 sm:px-8 py-4 text-xs text-slate-500 flex flex-col sm:flex-row justify-between gap-1.5">
+            <span>© {new Date().getFullYear()} GovDesk RTI, JanSoochna AI. Yeh sandarbh suchna hai, legal salah nahi.</span>
+            <span>Right to Information Act, 2005</span>
+          </div>
+        </footer>
       </div>
     </div>
   );
