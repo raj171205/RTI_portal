@@ -176,16 +176,17 @@ export default function CitizenDashboard() {
           "Content-Type": "application/json",
           ...(token ? { Authorization: `Bearer ${token}` } : {}),
         },
-        body: JSON.stringify({ query: rawPrompt }),
+        body: JSON.stringify({ prompt: rawPrompt }),
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || "Draft generation failed");
-      if (data.subject) setSubject(data.subject);
-      if (data.category && DEPARTMENTS.includes(data.category)) setCategory(data.category);
-      if (data.description) setDescription(data.description);
+      const draft = data.draft || data;
+      if (draft.subject) setSubject(draft.subject);
+      if (draft.category && DEPARTMENTS.includes(draft.category)) setCategory(draft.category);
+      if (draft.description) setDescription(draft.description);
       setDraftApplied(true);
     } catch (err) {
-      setDraftError("AI draft generate nahi ho paya. Dobara try karein.");
+      setDraftError(err.message || "AI draft generate nahi ho paya. Dobara try karein.");
     } finally {
       setDrafting(false);
     }
