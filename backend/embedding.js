@@ -6,32 +6,42 @@ dotenv.config();
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
 
 export async function generateEmbedding(text) {
-  const model = genAI.getGenerativeModel({ model: "text-embedding-004" });
-  const result = await model.embedContent(text);
+  const model = genAI.getGenerativeModel({ model: "gemini-embedding-001" });
+  const result = await model.embedContent({
+    content: { parts: [{ text }] },
+    outputDimensionality: 768,
+  });
   return result.embedding.values;
 }
 
-export async function draftRTIWithAI(roughPrompt) {
-  const model = genAI.getGenerativeModel({
-    model: "gemini-2.5-flash",
-    generationConfig: { responseMimeType: "application/json" },
-  });
+export async function draftRTIWithAI(rawQuery) {
+  const prompt = `You are an expert Indian legal assistant specializing in the Right to Information (RTI) Act, 2005.
+Convert the following citizen query into a formal, clear, and legally valid Indian RTI application.
+Return ONLY a valid JSON object with three keys:
+- "subject": concise subject line (15-90 characters)
+- "category": most relevant Indian government department (e.g., Public Works Department (PWD), Municipal Corporation, Education Department, Police Department, Electricity Board, Health Department, Revenue Department, or General Administration)
+- "description": numbered list of specific, objective questions seeking official records/information under Section 6(1) of the RTI Act, 2005 (200-1200 characters). Do NOT include personal salutations or signatures.
 
-  const prompt = `
-You are an expert Indian Right to Information (RTI Act, 2005) legal assistant.
-Convert the citizen's rough query into a clear, formal, point-by-point RTI application.
+Citizen Query: "${rawQuery}"`;
 
-Citizen Query: "${roughPrompt}"
+  const tryGenerate = async (modelName) => {
+    const model = genAI.getGenerativeModel({ model: modelName });
+    const result = await model.generateContent(prompt);
+    return result.response.text();
+  };
 
-Return ONLY a valid JSON object with these exact keys:
-{
-  "subject": "Concise formal subject line (between 15 and 95 characters)",
-  "category": "Must be strictly one of: Public Works Department | Municipal Corporation | Education Department | Health & Sanitation | Electricity & Water Supply",
-  "description": "Formal RTI Act 2005 request starting with 'Under Section 6(1) of the Right to Information Act, 2005, please provide the following information:' followed by 3-5 numbered, specific, factual questions (between 100 and 1500 characters)."
-}
-`;
+  let rawText;
+  try {
+    rawText = await tryGenerate("gemini-3.8-flash");
+  } catch (err) {
+    if (err.status === 503 || err.status === 429) {
+      await new Promise((r) => setTimeout(r, 2000));
+      rawText = await tryGenerate("gemini-3.8-flash");
+    } else {
+      throw err;
+    }
+  }
 
-  const result = await model.generateContent(prompt);
-  const text = result.response.text();
-  return JSON.parse(text);
+  const cleaned = rawText.replace(/```json|```/g, "").trim();
+  return JSON.parse(cleaned);
 }
